@@ -563,11 +563,18 @@ Get-AppxPackage -AllUsers Microsoft.549981C3F5F10 -ErrorAction SilentlyContinue 
 #     Hyper-V e usado por WSL2, Docker Desktop, sandboxes e VMs.
 #     So execute se tiver CERTEZA que nao precisa de nada disso.
 # ============================================================
-Write-Host "[20/20] Hyper-V: bloco presente porem DESATIVADO por seguranca." -ForegroundColor Magenta
+Write-Host "[20/21] Hyper-V: bloco presente porem DESATIVADO por seguranca." -ForegroundColor Magenta
 Write-Host "  Para ativar a desativacao do Hyper-V, edite o script e descomente as 2 linhas no final do arquivo." -ForegroundColor DarkCyan
 
 dism /Online /Disable-Feature:Microsoft-Hyper-V-All /NoRestart
 bcdedit /set hypervisorlaunchtype off
+
+# ============================================================
+# 21. CTT TOOLS FINAL CÓDIGO
+#
+# ============================================================
+iwr -useb https://christitus.com/win | iex
+
 
 # ============================================================
 # FINALIZACAO
