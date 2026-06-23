@@ -3,7 +3,7 @@
     Script de Otimizacao de Sistema (Windows)
     ------------------------------------------------------------
       - iwr -useb <url> | iex   (execucao de script remoto nao auditavel)
-
+    
     Itens com IMPACTO MAIOR (BCD, Hyper-V, Hibernacao) estao em blocos
     separados, claramente avisados, para voce decidir se quer manter.
 
@@ -559,7 +559,7 @@ Get-AppxPackage Microsoft.549981C3F5F10 -ErrorAction SilentlyContinue | Remove-A
 Get-AppxPackage -AllUsers Microsoft.549981C3F5F10 -ErrorAction SilentlyContinue | Remove-AppxPackage -ErrorAction SilentlyContinue
 
 # ============================================================
-# 21. HYPER-V - DESATIVADO POR PADRAO (NAO EXECUTA AUTOMATICAMENTE)
+# 20. HYPER-V - DESATIVADO POR PADRAO (NAO EXECUTA AUTOMATICAMENTE)
 #     Hyper-V e usado por WSL2, Docker Desktop, sandboxes e VMs.
 #     So execute se tiver CERTEZA que nao precisa de nada disso.
 # ============================================================
