@@ -36,7 +36,7 @@ function Set-Reg {
 # ============================================================
 # 1. ACESSIBILIDADE / TECLADO
 # ============================================================
-Write-Host "[1/20] Ajustando teclado e acessibilidade..." -ForegroundColor Yellow
+Write-Host "[1/21] Ajustando teclado e acessibilidade..." -ForegroundColor Yellow
 
 Set-Reg "HKCU:\Control Panel\Accessibility\Keyboard Response" "Flags" String "59"
 Set-Reg "HKCU:\Control Panel\Keyboard" "KeyboardDelay" String "0"
@@ -56,7 +56,7 @@ reg add "HKEY_CURRENT_USER\Control Panel\Accessibility\ToggleKeys" /v Flags /t R
 # ============================================================
 # 2. MOUSE
 # ============================================================
-Write-Host "[2/20] Ajustando mouse..." -ForegroundColor Yellow
+Write-Host "[2/21] Ajustando mouse..." -ForegroundColor Yellow
 
 reg add "HKU\.DEFAULT\Control Panel\Mouse" /v "Beep" /t REG_SZ /d "No" /f | Out-Null
 reg add "HKU\.DEFAULT\Control Panel\Mouse" /v "ExtendedSounds" /t REG_SZ /d "No" /f | Out-Null
@@ -84,7 +84,7 @@ reg add "HKCU\Control Panel\Mouse" /v "SmoothMouseYCurve" /t REG_BINARY /d 00000
 # ============================================================
 # 3. LATENCIA DE MONITOR / GPU / ENERGIA (DXGKrnl, Power, GraphicsDrivers)
 # ============================================================
-Write-Host "[3/20] Reduzindo latencias de GPU/monitor/energia..." -ForegroundColor Yellow
+Write-Host "[3/21] Reduzindo latencias de GPU/monitor/energia..." -ForegroundColor Yellow
 
 Set-Reg "HKLM:\SYSTEM\CurrentControlSet\Services\DXGKrnl" "MonitorLatencyTolerance" DWord 0
 Set-Reg "HKLM:\SYSTEM\CurrentControlSet\Services\DXGKrnl" "MonitorRefreshLatencyTolerance" DWord 0
@@ -129,7 +129,7 @@ Set-Reg $gfxPowerPath "TransitionLatency" DWord 1
 # ============================================================
 # 4. USB - DESATIVAR SUSPENSAO SELETIVA E REDUZIR LATENCIA
 # ============================================================
-Write-Host "[4/20] Ajustando energia de USB..." -ForegroundColor Yellow
+Write-Host "[4/21] Ajustando energia de USB..." -ForegroundColor Yellow
 
 Set-Reg "HKLM:\SYSTEM\CurrentControlSet\Services\USB" "DisableSelectiveSuspend" DWord 1
 
@@ -157,7 +157,7 @@ try {
 # ============================================================
 # 5. PRIORIDADE DE THREAD PARA DRIVERS (USB / NVIDIA / REDE)
 # ============================================================
-Write-Host "[5/20] Ajustando prioridade de threads de drivers..." -ForegroundColor Yellow
+Write-Host "[5/21] Ajustando prioridade de threads de drivers..." -ForegroundColor Yellow
 
 Set-Reg "HKLM:\SYSTEM\CurrentControlSet\Services\usbxhci\Parameters" "ThreadPriority" DWord 31
 Set-Reg "HKLM:\SYSTEM\CurrentControlSet\Services\USBHUB3\Parameters" "ThreadPriority" DWord 31
@@ -167,7 +167,7 @@ Set-Reg "HKLM:\SYSTEM\CurrentControlSet\Services\NDIS\Parameters" "ThreadPriorit
 # ============================================================
 # 6. ARMAZENAMENTO (SATA/StorPort) E HDD PARKING
 # ============================================================
-Write-Host "[6/20] Ajustando gerenciamento de energia de armazenamento..." -ForegroundColor Yellow
+Write-Host "[6/21] Ajustando gerenciamento de energia de armazenamento..." -ForegroundColor Yellow
 
 try {
     $storPortKeys = Get-ChildItem -Path "HKLM:\SYSTEM\CurrentControlSet\Enum" -Recurse -ErrorAction SilentlyContinue |
@@ -190,7 +190,7 @@ foreach ($valName in @("EnableHIPM","EnableDIPM","EnableHDDParking")) {
 # ============================================================
 # 7. TIMERS / COALESCING / POWER THROTTLING
 # ============================================================
-Write-Host "[7/20] Desativando coalescing de timers e power throttling..." -ForegroundColor Yellow
+Write-Host "[7/21] Desativando coalescing de timers e power throttling..." -ForegroundColor Yellow
 
 $smPath = "HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager"
 Set-Reg $smPath "CoalescingTimerInterval" DWord 0
@@ -215,12 +215,12 @@ Set-Reg "HKLM:\SYSTEM\CurrentControlSet\Control\Power\EnergyEstimation\TaggedEne
 # Remove planos de energia padrao extras (mantem o seu plano ativo)
 powercfg -delete 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c 2>$null
 powercfg -delete 381b4222-f694-41f0-9685-ff5bb260df2e 2>$null
-powercfg -delete a1841308-3541-4fab-bc81-f71556f20b4a 2>$null
+powercfg -delete a1841308-3541-4fab-bc81-f71556f21b4a 2>$null
 
 # ============================================================
 # 8. HIBERNACAO / SLEEP STUDY / FAST STARTUP
 # ============================================================
-Write-Host "[8/20] Desativando hibernacao e sleep study..." -ForegroundColor Yellow
+Write-Host "[8/21] Desativando hibernacao e sleep study..." -ForegroundColor Yellow
 
 Set-Reg "$smPath\Power" "HiberbootEnabled" DWord 0
 powercfg /h off
@@ -232,7 +232,7 @@ Set-Reg "$smPath\Power" "SleepStudyDisabled" DWord 1
 # 9. RELOGIO DO SISTEMA (DYNAMIC TICK / PLATFORM TICK)
 #    *** Mexe em configuracao de boot (BCD) ***
 # ============================================================
-Write-Host "[9/20] Ajustando relogio do sistema (BCD)..." -ForegroundColor Yellow
+Write-Host "[9/21] Ajustando relogio do sistema (BCD)..." -ForegroundColor Yellow
 Write-Host "  [INFO] Alteracoes de BCD podem exigir reinicio para efeito completo." -ForegroundColor DarkCyan
 
 bcdedit /set Disabledynamictick yes >nul 2>&1
@@ -246,7 +246,7 @@ bcdedit /set usefirmwarepcisettings No >nul 2>&1
 # ============================================================
 # 10. MMCSS - TAREFAS "GAMES" E "LOW LATENCY"
 # ============================================================
-Write-Host "[10/20] Configurando MMCSS (System Responsiveness / Games)..." -ForegroundColor Yellow
+Write-Host "[10/21] Configurando MMCSS (System Responsiveness / Games)..." -ForegroundColor Yellow
 
 $llPath = "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile\Tasks\Low Latency"
 Set-Reg $llPath "Affinity" DWord 0
@@ -275,7 +275,7 @@ Set-Reg "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemPro
 # ============================================================
 # 11. PRIORIDADE DE PROCESSOS / TIMEOUTS DE SISTEMA
 # ============================================================
-Write-Host "[11/20] Ajustando prioridade de processos e timeouts..." -ForegroundColor Yellow
+Write-Host "[11/21] Ajustando prioridade de processos e timeouts..." -ForegroundColor Yellow
 
 Set-Reg "HKLM:\SYSTEM\CurrentControlSet\Control\PriorityControl" "Win32PrioritySeparation" DWord 38
 
@@ -296,7 +296,7 @@ Set-Reg $csrssPath "IoPriority" DWord 3
 # ============================================================
 # 12. REDE / SMB (LanmanServer)
 # ============================================================
-Write-Host "[12/20] Ajustando parametros de rede (SMB)..." -ForegroundColor Yellow
+Write-Host "[12/21] Ajustando parametros de rede (SMB)..." -ForegroundColor Yellow
 
 $lanmanPath = "HKLM:\SYSTEM\CurrentControlSet\services\LanmanServer\Parameters"
 Set-Reg $lanmanPath "autodisconnect" DWord 0xffffffff
@@ -309,28 +309,28 @@ Set-Reg $lanmanPath "SharingViolationRetries" DWord 0
 # ============================================================
 # 13. FILA DE DADOS DE MOUSE/TECLADO E SISTEMA DE ARQUIVOS
 # ============================================================
-Write-Host "[13/20] Ajustando fila de dados de mouse/teclado e NTFS..." -ForegroundColor Yellow
+Write-Host "[13/21] Ajustando fila de dados de mouse/teclado e NTFS..." -ForegroundColor Yellow
 
-Set-Reg "HKLM:\SYSTEM\CurrentControlSet\Services\mouclass\Parameters" "MouseDataQueueSize" DWord 20
-Set-Reg "HKLM:\SYSTEM\CurrentControlSet\Services\kbdclass\Parameters" "KeyboardDataQueueSize" DWord 20
+Set-Reg "HKLM:\SYSTEM\CurrentControlSet\Services\mouclass\Parameters" "MouseDataQueueSize" DWord 21
+Set-Reg "HKLM:\SYSTEM\CurrentControlSet\Services\kbdclass\Parameters" "KeyboardDataQueueSize" DWord 21
 Set-Reg "HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem" "NtfsDisableLastAccessUpdate" DWord 1
 
 # ============================================================
 # 14. BIOMETRIA / DWM / EFEITOS VISUAIS
 # ============================================================
-Write-Host "[14/20] Ajustando efeitos visuais e biometria..." -ForegroundColor Yellow
+Write-Host "[14/21] Ajustando efeitos visuais e biometria..." -ForegroundColor Yellow
 
 Set-Reg "HKLM:\SOFTWARE\Policies\Microsoft\Biometrics" "Enabled" DWord 0
 Set-Reg "HKCU:\Software\Microsoft\Windows\DWM" "EnableAeroPeek" DWord 0
 Set-Reg "HKCU:\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize" "EnableTransparency" DWord 0
 Set-Reg "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\VisualEffects" "VisualFXSetting" DWord 2
 Set-Reg "HKCU:\Control Panel\Desktop" "VisualFXSetting" DWord 2
-reg add "HKCU\Control Panel\Desktop" /v UserPreferencesMask /t REG_BINARY /d 9012038010000000 /f | Out-Null
+reg add "HKCU\Control Panel\Desktop" /v UserPreferencesMask /t REG_BINARY /d 9012138010000000 /f | Out-Null
 
 # ============================================================
 # 15. BUSCA, CORTANA, GAME BAR, COPILOT
 # ============================================================
-Write-Host "[15/20] Desativando Cortana / Game Bar / Copilot / busca na web..." -ForegroundColor Yellow
+Write-Host "[15/21] Desativando Cortana / Game Bar / Copilot / busca na web..." -ForegroundColor Yellow
 
 Set-Reg "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Search" "BingSearchEnabled" DWord 0
 Set-Reg "HKCU:\Software\Microsoft\InputPersonalization" "RestrictImplicitInkCollection" DWord 1
@@ -367,7 +367,7 @@ Set-Reg "HKCU:\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager"
 # ============================================================
 # 16. TELEMETRIA E PRIVACIDADE (sem auditpol e sem SmartScreen)
 # ============================================================
-Write-Host "[16/20] Reduzindo telemetria e coleta de dados..." -ForegroundColor Yellow
+Write-Host "[16/21] Reduzindo telemetria e coleta de dados..." -ForegroundColor Yellow
 
 Set-Reg "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DataCollection" "AllowTelemetry" DWord 0
 Set-Reg "HKLM:\SOFTWARE\Policies\Microsoft\Windows\System" "AllowAppDataCollection" DWord 0
@@ -451,7 +451,7 @@ sc.exe stop dmwappushservice | Out-Null
 # ============================================================
 # 17. NOTIFICACOES / TRANSPARENCIA / SYNC / SHARE NEAR
 # ============================================================
-Write-Host "[17/20] Ajustando notificacoes e sincronizacao..." -ForegroundColor Yellow
+Write-Host "[17/21] Ajustando notificacoes e sincronizacao..." -ForegroundColor Yellow
 
 Set-Reg "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\PushNotifications" "ToastEnabled" DWord 0
 $notifSettings = "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Notifications\Settings"
@@ -511,7 +511,7 @@ Set-Reg "HKLM:\SYSTEM\CurrentControlSet\Services\dam" "Start" DWord 4
 # 18. SERVICOS DESNECESSARIOS (Maps, Spooler, PrintNotify, Search, w32time)
 #     ATENCAO: desativar Spooler impede impressao. Comentado por padrao.
 # ============================================================
-Write-Host "[18/20] Ajustando servicos do Windows..." -ForegroundColor Yellow
+Write-Host "[18/21] Ajustando servicos do Windows..." -ForegroundColor Yellow
 
 Set-Reg "HKLM:\SYSTEM\CurrentControlSet\Services\MapsBroker" "Start" DWord 4
 
@@ -542,7 +542,7 @@ Set-Reg "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Error Reporting" "Dis
 # ============================================================
 # 19. REMOCAO DE APPS PRE-INSTALADOS (BLOATWARE)
 # ============================================================
-Write-Host "[19/20] Removendo aplicativos pre-instalados (bloatware)..." -ForegroundColor Yellow
+Write-Host "[19/21] Removendo aplicativos pre-instalados (bloatware)..." -ForegroundColor Yellow
 
 $bloatPatterns = @(
     "*Microsoft.Windows.Cortana*", "*officehub*", "*phone*", "*messaging*",
@@ -559,7 +559,7 @@ Get-AppxPackage Microsoft.549981C3F5F10 -ErrorAction SilentlyContinue | Remove-A
 Get-AppxPackage -AllUsers Microsoft.549981C3F5F10 -ErrorAction SilentlyContinue | Remove-AppxPackage -ErrorAction SilentlyContinue
 
 # ============================================================
-# 20. HYPER-V - DESATIVADO POR PADRAO (NAO EXECUTA AUTOMATICAMENTE)
+# 21. HYPER-V - DESATIVADO POR PADRAO (NAO EXECUTA AUTOMATICAMENTE)
 #     Hyper-V e usado por WSL2, Docker Desktop, sandboxes e VMs.
 #     So execute se tiver CERTEZA que nao precisa de nada disso.
 # ============================================================
@@ -573,6 +573,8 @@ bcdedit /set hypervisorlaunchtype off
 # 21. CTT TOOLS FINAL CÓDIGO
 #
 # ============================================================
+Write-Host "[21/21] Ctt Tools: Script Bom para perfomance." -ForegroundColor Magenta
+
 iwr -useb https://christitus.com/win | iex
 
 
