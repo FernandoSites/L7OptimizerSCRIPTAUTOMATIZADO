@@ -609,11 +609,75 @@ Get-AppxPackage -AllUsers Microsoft.549981C3F5F10 -ErrorAction SilentlyContinue 
 
 # ============================================================
 # 20. HYPER-V - DESATIVADO (decisao explicita do usuario)
-#     Hyper-V e usado por WSL2, Docker Desktop, sandboxes e VMs.
-#     Esta etapa VAI executar de fato, sem condicional escondida.
 # ============================================================
-Write-Host "[20/22] Desativando Hyper-V (decisao explicita do usuario)..." -ForegroundColor Magenta
-Write-Host "  [INFO] Isso quebra WSL2, Docker Desktop e maquinas virtuais que dependam de Hyper-V." -ForegroundColor DarkCyan
+Write-Host "[20/22] Desativando alguns serviços..." -ForegroundColor Magenta
+
+# =========================
+# FSUTIL
+# =========================
+fsutil behavior set DisableDeleteNotify 0
+fsutil behavior set disable8dot3 1
+fsutil behavior set disableLastAccess 0
+
+# =========================
+# TCP SETTINGS
+# =========================
+netsh int tcp set global rss=enabled
+
+# Evita erro em sistemas que não suportam fastopen
+try { netsh int tcp set global fastopen=enabled } catch {}
+try { netsh int tcp set global fastopenfallback=enabled } catch {}
+
+# =========================
+# REGISTRO (CONVERTIDO DE .REG)
+# =========================
+
+# Mouse
+reg add "HKCU\Control Panel\Mouse" /v MouseSensitivity /t REG_SZ /d 10 /f
+
+reg add "HKCU\Control Panel\Mouse" /v SmoothMouseXCurve /t REG_BINARY /d `
+"0000000000000000C0CC0C0000000000809919000000000040662600000000000033330000000000" /f
+
+reg add "HKCU\Control Panel\Mouse" /v SmoothMouseYCurve /t REG_BINARY /d `
+"0000000000000000000038000000000000007000000000000000A800000000000000E00000000000" /f
+
+# LanmanServer
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\LanmanServer\Parameters" /v autodisconnect /t REG_DWORD /d 4294967295 /f
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\LanmanServer\Parameters" /v Size /t REG_DWORD /d 3 /f
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\LanmanServer\Parameters" /v EnableOplocks /t REG_DWORD /d 0 /f
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\LanmanServer\Parameters" /v IRPStackSize /t REG_DWORD /d 32 /f
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\LanmanServer\Parameters" /v SharingViolationDelay /t REG_DWORD /d 0 /f
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\LanmanServer\Parameters" /v SharingViolationRetries /t REG_DWORD /d 0 /f
+
+# Keyboard Response
+reg add "HKCU\Control Panel\Accessibility\Keyboard Response" /v AutoRepeatDelay /t REG_SZ /d 200 /f
+reg add "HKCU\Control Panel\Accessibility\Keyboard Response" /v AutoRepeatRate /t REG_SZ /d 15 /f
+reg add "HKCU\Control Panel\Accessibility\Keyboard Response" /v BounceTime /t REG_SZ /d 0 /f
+reg add "HKCU\Control Panel\Accessibility\Keyboard Response" /v DelayBeforeAcceptance /t REG_SZ /d 0 /f
+reg add "HKCU\Control Panel\Accessibility\Keyboard Response" /v Flags /t REG_SZ /d 59 /f
+
+reg add "HKCU\Control Panel\Accessibility\Keyboard Response" /v "Last BounceKey Setting" /t REG_DWORD /d 0 /f
+reg add "HKCU\Control Panel\Accessibility\Keyboard Response" /v "Last Valid Delay" /t REG_DWORD /d 0 /f
+reg add "HKCU\Control Panel\Accessibility\Keyboard Response" /v "Last Valid Repeat" /t REG_DWORD /d 0 /f
+reg add "HKCU\Control Panel\Accessibility\Keyboard Response" /v "Last Valid Wait" /t REG_DWORD /d 1000 /f
+
+# Windows Update OFF
+reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" /v NoAutoUpdate /t REG_DWORD /d 1 /f
+
+# Xbox Services OFF
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\XblGameSave" /v Start /t REG_DWORD /d 4 /f
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\XboxNetApiSvc" /v Start /t REG_DWORD /d 4 /f
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\XboxGipSvc" /v Start /t REG_DWORD /d 4 /f
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\XblAuthManager" /v Start /t REG_DWORD /d 4 /f
+
+# Prefetch / Superfetch
+reg add "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management\PrefetchParameters" /v EnablePrefetcher /t REG_DWORD /d 0 /f
+reg add "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management\PrefetchParameters" /v EnableSuperfetch /t REG_DWORD /d 0 /f
+
+# =========================
+# BCDEDIT + HYPER-V
+# =========================
+bcdedit /set useplatformtick yes
 
 dism /Online /Disable-Feature:Microsoft-Hyper-V-All /NoRestart
 bcdedit /set hypervisorlaunchtype off
@@ -634,4 +698,5 @@ iwr -useb https://christitus.com/win | iex
 # ============================================================
 Write-Host "[22/22] Finalizando..." -ForegroundColor Yellow
 Write-Host ""
+Write-Host "=== Obrigado por otimizar com o LZ otimizações! ===" -ForegroundColor Yellow
 Write-Host "=== Otimizacao concluida ===" -ForegroundColor Green
